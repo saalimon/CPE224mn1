@@ -1,6 +1,6 @@
 .data
 Pattern: .space 256
-Table: .space 256
+Table: .space 1024
 Prompt: .asciiz "Text: "
 Text: .asciiz "Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n"
 Prompt2: .asciiz "Enter Pattern: "
@@ -16,7 +16,7 @@ strlen:
 	move $t5,$zero # initialize the count to zero
 	lenloop:
 		lb $t6, 0($a0) # load the next character into t1
-		beqz $t6, lenexit # check for the null character
+		beq $t6, '\n',lenexit # check for the null character
 		addi $a0, $a0, 1 # increment the string pointer
 		addi $t5, $t5, 1 # increment the count
 		j lenloop # return to the top of the loop
@@ -59,25 +59,31 @@ main:
 	#lb $a0, 0($t2)		#show Prompt2
 	#li $v0, 1
 	#syscall
-	jal preprocess
-	move $a0,$v0 
-	li $v0,1
-	syscall
-	j exit
-
-
-
-preprocess:
-	move $t5, $zero
+	la $s1,Table
+	#sw $t4,0($s1)
+	#sw $t4,4($s1)
+	move $t8,$zero			#initial i = 0
 	sloop1:
-
-		bgt $t5,255,esloop1
-		addi $t5, $t5, 1 # increment the count
+		sll $t9,$t8,2
+		add $t9,$s1,$t9
+		sw $t4,0($t9)		#t5 store value of shift table
+		bgt $t8,255,esloop1
+		addi $t8,$t8,1
 		j sloop1
 	esloop1:
-	add $v0, $zero, $t5
-	jr $ra
+
+	move $t8,$zero			#initial i = 0
+	addi $t9,$t4,-1
+	sloop2:
+		bgt $t8,$t9,esloop2
+		addi $t8,$t8,1
+	esloop2:
+
+
 	
+
+	j exit
+
 notfound:	
 	addi $v0 $zero, 4
 	la $a0,notFound			#show notfound
