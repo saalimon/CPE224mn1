@@ -1,5 +1,6 @@
 .data
 Pattern: .space 256
+Table: .space 256
 Prompt: .asciiz "Text: "
 Text: .asciiz "Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n"
 Prompt2: .asciiz "Enter Pattern: "
@@ -26,18 +27,18 @@ strlen:
 main:
 	la $a0, Prompt 			#show Prompt
 	syscall
-	addi $v0, $zero, 4
+	li $v0, 4
 	la $a0, Text
 	syscall
-	addi $a1 , $0 , 256	
+	addi $a1 , $zero , 256	
 	add $t1, $a0, $zero		#load text to t1
 
-	addi $v0 $zero, 4
+	li $v0, 4
 	la $a0, Prompt2			#show Prompt2
 	syscall
-	addi $v0, $zero, 8
+	li $v0, 8
 	la $a0, Pattern	
-    addi $a1, $0, 256				
+    addi $a1, $zero, 256				
     add $t2 , $a0 , $zero	#get pattern from user			
     syscall 
 
@@ -54,10 +55,29 @@ main:
 	sub $t8,$t4,$t3 		#Pattern - Text
 	slt $t8, $t8, $zero
 	beq $t8, $zero, notfound
+
+	#lb $a0, 0($t2)		#show Prompt2
+	#li $v0, 1
+	#syscall
+	jal preprocess
+	move $a0,$v0 
+	li $v0,1
+	syscall
 	j exit
 
 
+
 preprocess:
+	move $t5, $zero
+	sloop1:
+
+		bgt $t5,255,esloop1
+		addi $t5, $t5, 1 # increment the count
+		j sloop1
+	esloop1:
+	add $v0, $zero, $t5
+	jr $ra
+	
 notfound:	
 	addi $v0 $zero, 4
 	la $a0,notFound			#show notfound
