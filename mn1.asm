@@ -66,18 +66,27 @@ main:
 	sloop1:
 		sll $t9,$t8,2
 		add $t9,$s1,$t9
-		sw $t4,0($t9)		#t5 store value of shift table
+		sw $t4,0($t9)		#t4 store value of shift table
 		bgt $t8,255,esloop1
 		addi $t8,$t8,1
 		j sloop1
 	esloop1:
 
 	move $t8,$zero			#initial i = 0
-	addi $t9,$t4,-1
-	sloop2:
-		bgt $t8,$t9,esloop2
-		addi $t8,$t8,1
-	esloop2:
+	addi $t7,$t4,-1
+
+	add $t9,$t2,$zero
+	lb $t6,0($t9)		# load byte character from pattern P[i]
+	sll $t6,$t6,2		# shift byte 2 = P[i]*4
+	add $t9,$t6,$s1		# Table[P[i]]
+	add $a0,$t9,$zero	#show value in Table[P[i]]
+	li $v0,1
+	syscall
+	#sloop2:
+		
+	#	bgt $t8,$t7,esloop2
+	#	addi $t8,$t8,1
+	#esloop2:
 
 
 	
