@@ -2,7 +2,7 @@
 #include <string>
 #define SIZE 256
 using namespace std;
-
+//horspool algorithm in cpp
 string text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
 int table[SIZE];
 
